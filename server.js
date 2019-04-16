@@ -9,13 +9,17 @@ const port = 5000;
 
 app.use(bodyParser.urlencoded({extended: true}))
 
-MongoClient.connect(db.url, (err, database) => {
-  if(err) {
-    return console.log(err);
-  } else {
-    require('./app/routes')(app, database);
-    app.listen(port, () => {
-      console.log('we are live on port ' + port)
+MongoClient.connect("mongodb://jacob1:jacob1@ds139896.mlab.com:39896/notable", {useNewUrlParser: true});
+
+app.post('/notes', (req, res) => {
+    const note = {text: req.body.body, title: req.body.title}
+    db.collection('notes').insert(note, (err, result) => {
+      if(err) {
+        res.send({
+          'error': 'an error happended'
+        })
+      } else {
+        res.send(result.ops[0])
+      }
     })
-  }
-});
+  })
